@@ -6,12 +6,14 @@ import 'package:flutter_frontend/model/StarLists.dart';
 import 'package:flutter_frontend/model/dataInsert/star_list.dart';
 import 'package:flutter_frontend/services/userservice/api_controller_service.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_frontend/model/SessionStore.dart';
+
 
 class StarListService {
   Future<StarLists>? starList() async {
     var token = await AuthController().getToken();
-    int id = 1;
-    final url = 'http://localhost:8001/starlists?user_id=${id}';
+    int userId = SessionStore.sessionData!.currentUser!.id!.toInt();
+    final url = 'http://localhost:8001/starlists?user_id=${userId}';
     try {
       final response = await http.get(
         Uri.parse(url),

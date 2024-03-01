@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/constants.dart';
-import 'package:flutter_frontend/screens/Navigation/profle.dart';
 import 'package:flutter_frontend/screens/Welcome/welcome_screen.dart';
 import 'package:flutter_frontend/services/directMessage/provider/direct_message_provider.dart';
+import 'package:flutter_mentions/flutter_mentions.dart';
 import 'package:provider/provider.dart';
 
 void main() => runApp(const MyApp());
@@ -14,12 +14,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => DirectMessageProvider()  ),
+        ChangeNotifierProvider(create: (_) => DirectMessageProvider()),
       ],
       child: MaterialApp(
-        routes: {
-          'profile': (context) =>  const profile()
-        },
+        builder: (_,child) => Portal(child: child!),    
         debugShowCheckedModeBanner: false,
         title: 'Flutter Auth',
         theme: ThemeData(

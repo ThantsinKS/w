@@ -9,7 +9,6 @@ class UnreadApi {
   Future<UnreadMsg> unreadList() async {
     var token = await AuthController().getToken();
     int id = SessionStore.sessionData!.currentUser!.id!.toInt();
-
     final url = 'http://localhost:8001/allunread?user_id=${id}';
     try {
       final Response = await http.get(

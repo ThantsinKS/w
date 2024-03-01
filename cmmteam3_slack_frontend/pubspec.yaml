@@ -56,6 +56,7 @@ dev_dependencies:
   loading_progress: ^1.0.2
   liquid_pull_to_refresh: ^3.0.1
   rive: ^0.12.4
+  flutter_mentions:
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

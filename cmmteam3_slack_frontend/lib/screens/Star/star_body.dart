@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/componnets/Nav.dart';
 import 'package:flutter_frontend/constants.dart';
 import 'package:flutter_frontend/model/MentionLists.dart';
 import 'package:flutter_frontend/model/StarLists.dart';
@@ -19,10 +18,11 @@ class StarBody extends StatefulWidget {
 class _StarBodyState extends State<StarBody> {
   int? isSelected = 1;
   static List<Widget> pages = [
-    const DirectThreadStars(),
-    const DirectStars(),
-    const GroupThreadStar(),
-    const GroupStarWidget()
+    
+  const DirectStars(),
+  const DirectThreadStars(),
+  const GroupStarWidget(),
+  const GroupThreadStar()
   ];
 
   @override
@@ -35,7 +35,10 @@ class _StarBodyState extends State<StarBody> {
         backgroundColor: kPriamrybackground, // Corrected typo here
         leading: IconButton(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const WorkHome()),
+            );
           },
           icon: const Icon(Icons.arrow_back),
         ),
@@ -53,7 +56,7 @@ class _StarBodyState extends State<StarBody> {
                       isSelected = 1;
                     });
                   },
-                  child: const Text("Direct Thread Star"),
+                  child: const Text("Direct Star"),
                 ),
                 const SizedBox(
                   width: 20.0,
@@ -64,7 +67,7 @@ class _StarBodyState extends State<StarBody> {
                       isSelected = 2;
                     });
                   },
-                  child: const Text("Direct Star"),
+                  child: const Text("Direct Thread Star"),
                 ),
                 const SizedBox(
                   width: 20.0,
@@ -75,7 +78,7 @@ class _StarBodyState extends State<StarBody> {
                       isSelected = 3;
                     });
                   },
-                  child: const Text("Group Thread Star"),
+                  child: const Text("Group Star"),
                 ),
                 const SizedBox(
                   width: 20.0,
@@ -86,7 +89,7 @@ class _StarBodyState extends State<StarBody> {
                       isSelected = 4;
                     });
                   },
-                  child: const Text("Group Star"),
+                  child: const Text("Group Thread Star"),
                 ),
               ],
             ),

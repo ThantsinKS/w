@@ -30,7 +30,7 @@ class _DirectMessageWidgetState extends State<DirectMessageWidget> {
       //     .getAllMessages(1);
     });
 
-    Timer.periodic(Duration(seconds: 3), (timer) {
+    Timer.periodic(Duration(seconds: 5), (timer) {
       directMessageService.getAllDirectMessages(1);
     });
   }
@@ -105,10 +105,11 @@ class _DirectMessageWidgetState extends State<DirectMessageWidget> {
           stream: directMessageService.getAllDirectMessages(1),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
-              return const ProgressionBar(imageName: 'dataSending.json', height: 200, size: 200,);
-            } else if (!snapshot.hasData ||
-                snapshot.connectionState == ConnectionState.waiting) {
-              return const ProgressionBar(imageName: 'waiting.json', height: 200, size: 200,);
+              return const ProgressionBar(
+                imageName: 'dataSending.json',
+                height: 200,
+                size: 200,
+              );
             } else {
               bool isCurrentUser = currentUserId ==
                   snapshot.data!.tDirectMessage!.sendUserId!.toInt();

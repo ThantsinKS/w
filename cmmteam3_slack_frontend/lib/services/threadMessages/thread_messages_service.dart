@@ -21,6 +21,7 @@ class threadApi{
         if(Response.statusCode==200){
           final Map<String,dynamic> data = jsonDecode(Response.body);
           Threads threads = Threads.fromJson(data);
+          print(threads);
           return threads;
         }else{
           throw Exception('data is not found');

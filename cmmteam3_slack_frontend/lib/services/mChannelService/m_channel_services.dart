@@ -8,14 +8,16 @@ class MChannelServices {
   Future<void> createChannel(String channelName, int status) async {
     try {
       var token = await AuthController().getToken();
-      int userId = SessionStore.sessionData!.mUsers![0].id!.toInt();
+      int userId = SessionStore.sessionData!.currentUser!.id!.toInt();
       int workSpaceId = SessionStore.sessionData!.mWorkspace!.id!.toInt();
 
       Map<String, dynamic> requestBody = {
-        "user_id": userId,
-        "channel_status": status,
-        "channel_name": channelName,
-        "m_workspace_id": workSpaceId
+        "m_channel": {
+          "user_id": userId,
+          "channel_status": status,
+          "channel_name": channelName,
+          "m_workspace_id": workSpaceId
+        }
       };
 
       final response = await http.post(
@@ -45,8 +47,7 @@ class MChannelServices {
     try {
       var token = await AuthController().getToken();
 
-       await http
-          .delete(Uri.parse(url), headers: {
+      await http.delete(Uri.parse(url), headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       });
@@ -83,6 +84,24 @@ class MChannelServices {
       }
     } catch (e) {
       print(e);
+      throw e;
+    }
+  }
+
+  Future<void> channelJoin(int channelId) async {
+    var token = await AuthController().getToken();
+    String url = "http://localhost:8001/channeluserjoin?channel_id=$channelId";
+    try {
+      var response = await http.get(Uri.parse(url), headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+      });
+      if (response.statusCode == 200) {
+        print("join channel has successful");
+      } else {
+        print("$response.statusCode");
+      }
+    } catch (e) {
       throw e;
     }
   }

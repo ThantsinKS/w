@@ -1,7 +1,10 @@
+// ignore_for_file: use_build_context_synchronously, prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/componnets/Nav.dart';
 import 'package:flutter_frontend/constants.dart';
 import 'package:flutter_frontend/model/SessionStore.dart';
+import 'package:flutter_frontend/progression.dart';
 import 'package:flutter_frontend/screens/home/workspacehome.dart';
 import 'package:flutter_frontend/services/memberinvite/MemberInvite.dart';
 
@@ -17,8 +20,10 @@ class _MemberInvitationState extends State<MemberInvitation> {
       SessionStore.sessionData!.mWorkspace!.workspaceName.toString();
   int channelLength = SessionStore.sessionData!.mChannels!.length.toInt();
   int? channelId;
-  bool _isSendingEmail =
-      false; // State variable to track if email is being sent
+  bool _isSendingEmail = false;
+
+  late List<bool> selected;
+
   Future<void> _submitEmail(
       String email, int channelId, BuildContext context) async {
     try {
@@ -47,6 +52,13 @@ class _MemberInvitationState extends State<MemberInvitation> {
         _isSendingEmail = false;
       });
     }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    selected = List.generate(channelLength, (index) => false);
   }
 
   @override
@@ -84,23 +96,31 @@ class _MemberInvitationState extends State<MemberInvitation> {
               style: const TextStyle(fontSize: 20),
             ),
             const SizedBox(height: 16.0),
-            Expanded(
+            Container(
+              decoration: BoxDecoration(border: Border.all(width: 3)),
+              height: 200,
               child: ListView.builder(
                 itemCount: channelLength,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    tileColor: SessionStore.sessionData!.mChannels![index].id ==
-                            channelId
-                        ? Colors.green
-                        : Colors.white,
+                    leading: SessionStore
+                            .sessionData!.mChannels![index].channelStatus!
+                        ? const Icon(Icons.tag)
+                        : const Icon(Icons.lock),
                     enableFeedback: true,
-                    selected: SessionStore.sessionData!.mChannels![index].id ==
-                        channelId,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10)),
                     title: TextButton(
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStatePropertyAll(
+                              selected[index] ? Colors.green : Colors.white)),
                       onPressed: () {
                         setState(() {
+                          for (var i = 0; i < selected.length; i++) {
+                            if (i != index) {
+                              selected[i] = false;
+                            }
+                          }
                           channelId =
                               SessionStore.sessionData!.mChannels![index].id!;
                         });
@@ -108,7 +128,9 @@ class _MemberInvitationState extends State<MemberInvitation> {
                       child: Text(
                         SessionStore.sessionData!.mChannels![index].channelName
                             .toString(),
-                        style: const TextStyle(color: kPrimaryTextColor),
+                        style: TextStyle(
+                            color:
+                                selected[index] ? Colors.green : Colors.white),
                       ),
                     ),
                   );
@@ -128,14 +150,15 @@ class _MemberInvitationState extends State<MemberInvitation> {
                 ),
               ),
             ),
-            const SizedBox(height: 16.0),
+            const SizedBox(height: 10),
             Visibility(
               visible:
                   _isSendingEmail, // Show loading indicator if email is being sent
-              child: Column(
+              child: const Column(
                 children: [
-                  CircularProgressIndicator(),
-                  const SizedBox(height: 8.0),
+                  ProgressionBar(
+                      imageName: 'dataSending.json', height: 100, size: 100),
+                  SizedBox(height: 8.0),
                   Text('Sending email...'),
                 ],
               ),
@@ -144,7 +167,6 @@ class _MemberInvitationState extends State<MemberInvitation> {
               onPressed: () {
                 // Check if email is already being sent
                 if (!_isSendingEmail) {
-                  // If not sending, initiate email sending process
                   _submitEmail(emailController.text, channelId!, context);
                 }
               },

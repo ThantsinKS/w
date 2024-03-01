@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/componnets/Nav.dart';
 import 'package:flutter_frontend/model/SessionStore.dart';
 import 'package:flutter_frontend/model/dataInsert/user_management_store.dart';
 import 'package:flutter_frontend/progression.dart';
@@ -30,22 +31,14 @@ class _UserManagementState extends State<UserManagement> {
     // int userLength = SessionStore.sessionData!.mUsers!.length.toInt();
     int? userId;
 
-    final MaterialStateProperty<Icon?> thumbIcon =
-        MaterialStateProperty.resolveWith<Icon?>(
-      (Set<MaterialState> states) {
-        if (states.contains(MaterialState.selected)) {
-          return const Icon(Icons.check);
-        }
-        return const Icon(Icons.close);
-      },
-    );
+    
     return Scaffold(
       backgroundColor: const Color(0xFF92AFE6),
       appBar: AppBar(
         backgroundColor: const Color(0xFF3860EF),
         leading: GestureDetector(
           onTap: () {
-            return Navigator.pop(context);
+            Navigator.pop(context);
           },
           child: const Icon(Icons.arrow_back),
         ),
@@ -53,26 +46,23 @@ class _UserManagementState extends State<UserManagement> {
       ),
       body: Consumer<DirectMessageProvider>(
         builder: (context, value, child) {
-          int userLength = value.userManagement!.mUsers!.length.toInt();
           if (value.isLoading) {
             return const ProgressionBar(
               imageName: 'aboydatasending.json',
               height: 200,
               size: 200,
             );
-          } else if (value.userManagement == null) {
-            return const ProgressionBar(
-              imageName: 'nodatahasFounded.json',
-              height: 200,
-              size: 200,
-            );
-          } else if (userLength == 0) {
+          } else if (value.userManagement == null ||
+              value.userManagement!.mUsers == null ||
+              value.userManagement!.mUsers!.isEmpty) {
             return const ProgressionBar(
               imageName: 'nodatahasFounded.json',
               height: 200,
               size: 200,
             );
           } else {
+            int userLength = value.userManagement!.mUsers!.length;
+
             return ListView.builder(
               itemCount: userLength,
               itemBuilder: (context, index) {
@@ -84,7 +74,8 @@ class _UserManagementState extends State<UserManagement> {
                 String userName =
                     value.userManagement!.mUsers![index].name.toString();
                 String email =
-                    value!.userManagement!.mUsers![index].email.toString();
+                    value.userManagement!.mUsers![index].email.toString();
+
                 return ListTile(
                   leading: Container(
                     height: 50,
@@ -107,24 +98,24 @@ class _UserManagementState extends State<UserManagement> {
                   subtitle: Text(
                     email,
                     style: const TextStyle(
-                        color: Color.fromARGB(144, 255, 255, 255)),
+                      color: Color.fromARGB(144, 255, 255, 255),
+                    ),
                   ),
-                  trailing: isAdmin == true // If user is admin
-                      ? null // Return null, which effectively disables the Switch
+                  trailing: isAdmin == true
+                      ? null
                       : Switch(
                           value: isMemberStatus ?? false,
-                          thumbIcon: thumbIcon,
                           onChanged: (value) async {
                             setState(() {
                               userId = userIds;
                             });
                             await userManagementService.deactivateUser(userId!);
-                            // ignore: use_build_context_synchronously
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const UserManagement(),
-                                ));
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const UserManagement(),
+                              ),
+                            );
                           },
                         ),
                 );

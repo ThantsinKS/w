@@ -5,11 +5,14 @@ import 'package:flutter_frontend/model/SessionState.dart';
 import 'package:flutter_frontend/progression.dart';
 import 'package:flutter_frontend/screens/Star/star_body.dart';
 import 'package:flutter_frontend/screens/directMessage/direct_message.dart';
+import 'package:flutter_frontend/screens/groupMessage/groupMessageTest.dart';
 import 'package:flutter_frontend/screens/mChannel/m_channel_create.dart';
 import 'package:flutter_frontend/screens/memverinvite/member_invite.dart';
 import 'package:flutter_frontend/screens/threadMessage/thread_message.dart';
 import 'package:flutter_frontend/screens/unreadMessage/unread_msg.dart';
 import 'package:flutter_frontend/screens/userManage/usermanage.dart';
+import 'package:flutter_frontend/services/mChannelService/m_channel_service.dart';
+import 'package:flutter_frontend/services/mChannelService/m_channel_services.dart';
 import 'package:flutter_frontend/services/starlistsService/star_lists_service.dart';
 import 'package:flutter_frontend/services/userservice/api_controller_service.dart';
 import 'package:flutter_frontend/services/userservice/user_management.dart';
@@ -22,6 +25,7 @@ class WorkHome extends StatefulWidget {
 }
 
 class _WorkHomeState extends State<WorkHome> {
+  int? joinId;
   @override
   Widget build(BuildContext context) {
     AuthController controller = AuthController();
@@ -43,7 +47,7 @@ class _WorkHomeState extends State<WorkHome> {
         } else {
           SessionData data = snapshot.data!;
           String currentName = data.currentUser!.name.toString();
-          int channelLength = data.mChannels!.length;
+          int channelLength = data.mPChannels!.length;
           int workSpaceUserLength = data.mUsers!.length;
           return Scaffold(
             backgroundColor: Color.fromARGB(255, 246, 255, 255),
@@ -194,10 +198,26 @@ class _WorkHomeState extends State<WorkHome> {
                                       shrinkWrap: true,
                                       itemCount: channelLength,
                                       itemBuilder: (context, index) {
-                                        final channel = data.mChannels![index];
+                                        final channel = data.mPChannels![index];
+                                        var mpChannel = data.mPChannels;
+                                        var mChannel = data.mChannels;
+                                        bool isEquals = mChannel!.any((m) =>
+                                            m.id == mpChannel![index].id);
 
                                         return GestureDetector(
-                                          onTap: () {},
+                                          onTap: () {
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        groupMessage(
+                                                          channelID: channel.id,
+                                                          channelStatus: channel
+                                                              .channelStatus,
+                                                          channelName: channel
+                                                              .channelName,
+                                                        )));
+                                          },
                                           child: ListTile(
                                             leading: channel.channelStatus!
                                                 ? const Icon(Icons.tag)
@@ -207,6 +227,35 @@ class _WorkHomeState extends State<WorkHome> {
                                               style: const TextStyle(
                                                   color: kPrimaryTextColor),
                                             ),
+                                            trailing: !isEquals
+                                                ? TextButton(
+                                                    style: const ButtonStyle(
+                                                        backgroundColor:
+                                                            MaterialStatePropertyAll(
+                                                                Colors.yellow)),
+                                                    onPressed: () {
+                                                      setState(() {
+                                                        joinId = data
+                                                            .mPChannels![index]
+                                                            .id!
+                                                            .toInt();
+                                                      });
+
+                                                      var response =
+                                                          MChannelServices()
+                                                              .channelJoin(
+                                                                  joinId!);
+                                                      response.whenComplete(
+                                                          () => Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                  builder:
+                                                                      (context) =>
+                                                                          const Nav())));
+                                                    },
+                                                    child:
+                                                        const Text('Join ME'))
+                                                : null,
                                           ),
                                         );
                                       },
@@ -329,6 +378,5 @@ class _WorkHomeState extends State<WorkHome> {
         }
       },
     );
-  
   }
 }

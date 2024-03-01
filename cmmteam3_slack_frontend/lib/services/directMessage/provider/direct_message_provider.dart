@@ -21,12 +21,12 @@ class DirectMessageProvider extends ChangeNotifier {
   //   notifyListeners();
   // }
 
-  Future<void> getAllUsers() async {
+  Future getAllUsers() async {
     isLoading = true;
     notifyListeners();
 
     final response = await _userManagementService.getAllUsers();
-    userManagement = response;
+     userManagement = response;
     isLoading = false;
     notifyListeners();
   }

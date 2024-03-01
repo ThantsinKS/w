@@ -56,13 +56,16 @@ class AuthController {
         SessionData sessionData = SessionData.fromJson(data);
         SessionStore.sessionData = sessionData;
 
+        print("session");
+        print(sessionData.mWorkspace!.workspaceName.toString());
         return sessionData;
       } else {
-       
+        print("Error: ${response.statusCode} - ${response.reasonPhrase}");
         throw Exception(
             "Failed to fetch session data: ${response.statusCode} - ${response.reasonPhrase}");
       }
-    } catch (e){
+    } catch (e) {
+      print("Error in mainPage: $e");
       throw e;
     }
   }
@@ -145,8 +148,15 @@ class AuthController {
           body: jsonEncode(requestBody));
 
       if (response.statusCode == 201) {
-      } else if (response.statusCode != 200) {
-      } else {}
-    } catch (e) {}
+        print('User created successfully!');
+      } else if (response.statusCode == 422) {
+        throw Exception('Failed to create user. Email is already taken');
+      } else {
+        throw Exception('Failed to create user.');
+      }
+    } catch (e) {
+      print("Error in createUser: $e");
+      throw e;
+    }
   }
 }

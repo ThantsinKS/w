@@ -37,12 +37,9 @@ class UserManagementService {
         UserManagement userManagement = UserManagement.fromJson(data);
         UserManagementStore.userManagement = userManagement;
         final user = UserManagementStore.userManagement;
-        print('idk');
-        print(user!.mWorkspace!.workspaceName.toString());
-        print(user.mUsers!.length.toInt());
+
         return userManagement;
       } else {
-        print("Error: ${response.statusCode} - ${response.reasonPhrase}");
         throw Exception(
             "Failed to fetch session data: ${response.statusCode} - ${response.reasonPhrase}");
       }
